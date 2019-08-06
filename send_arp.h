@@ -1,5 +1,4 @@
 #pragma once
-
 #include <stdint.h>
 #include <stdio.h>
 #include<pcap.h>
@@ -13,7 +12,13 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <net/if.h>
+#include <netinet/ether.h>
 #pragma pack (1) //Sort Structure
+#define IP_Number 0x0800
+#define ARP_Number 0x0806
+#define OC_Req 0x0001
+#define OC_Rep 0x0002
+
 
 typedef struct ARP_PACKET_Struct{
     uint8_t D_Mac[6];
@@ -32,4 +37,10 @@ typedef struct ARP_PACKET_Struct{
 
 
 unsigned char * find_Attacker_Mac(const char *dev);
+const u_char* find_Sender_Mac(pcap* handle,  struct pcap_pkthdr* header, ARP *ARP_Pac,const u_char* packet);
 void usage();
+void ARP_REQ_Set(const char *dev, ARP *ARP_Pac,uint32_t SenderIP);
+void ARP_REP_Set(ARP *ARP_pac,const char * argv[] ,const u_char* packet);
+void Send_ARP(pcap_t* handle, ARP *ARP_Pac, int packet_size);
+
+
