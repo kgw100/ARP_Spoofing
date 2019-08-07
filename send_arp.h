@@ -13,17 +13,19 @@
 #include <stdlib.h>
 #include <net/if.h>
 #include <netinet/ether.h>
-#pragma pack (1) //Sort Structure
+#pragma pack (1) //Sorting Structure
 #define IP_Number 0x0800
 #define ARP_Number 0x0806
 #define OC_Req 0x0001
 #define OC_Rep 0x0002
 
-
-typedef struct ARP_PACKET_Struct{
+typedef struct ETH_Struct{
     uint8_t D_Mac[6];
     uint8_t S_Mac[6];
     uint16_t Eth_type;
+}Eth_Header;
+
+typedef struct ARP_Struct{
     uint16_t HW_Type;
     uint16_t PT_Type;
     uint8_t HAL;
@@ -33,6 +35,12 @@ typedef struct ARP_PACKET_Struct{
     uint32_t SPT_Adr;
     uint8_t DHW_Adr[6];
     uint32_t DPT_Adr;
+}ARP_Header;
+
+
+typedef struct ARP_PACKET_Struct{
+    struct ETH_Struct Eth_Header;
+    struct ARP_Struct ARP_Header;
 }ARP;
 
 

@@ -27,6 +27,6 @@ int main (int argc, const char * argv[])
     ARP_REP_Set(ARP_Pac,argv,packet);
 
     Send_ARP(handle,ARP_Pac,sizeof(ARP));
-   // free(ARP_Pac);
-   //  return 0;
+    free(ARP_Pac);
+    return 0;
 }
