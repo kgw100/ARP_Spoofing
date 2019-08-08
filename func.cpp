@@ -2,26 +2,27 @@
 
 unsigned char * find_Attacker_Mac(const char *dev)
 {
-    struct ifreq ifr;
+    struct ifreq *ifr=(ifreq *)malloc(sizeof(ifreq));
     int s;
-    memset(&ifr, 0x00, sizeof(ifr));
-      strcpy(ifr.ifr_name, dev);
+    memset(ifr, 0x00, sizeof(*ifr));
+    strcpy(ifr->ifr_name, dev);
 
-     if ((s = socket(AF_INET, SOCK_STREAM,0)) < 0) {
-       perror("socket");
+      if((s=socket(AF_UNIX,SOCK_DGRAM,0))<0)
+      {
+          perror("socket");
+          exit(EXIT_FAILURE);
+      }
 
-       exit(EXIT_FAILURE);
-     }
-
-     if (ioctl(s, SIOCGIFHWADDR, &ifr) < 0) {
+     if (ioctl(s, SIOCGIFHWADDR, ifr) < 0) {
        perror("ioctl");
 
        exit(EXIT_FAILURE);
      }
     unsigned char * Attacker_mac = (unsigned char *)malloc(sizeof(char)*6);
-    Attacker_mac = (unsigned char *)ifr.ifr_hwaddr.sa_data;
+    Attacker_mac = (unsigned char *)ifr->ifr_hwaddr.sa_data;
     close(s);
-          return Attacker_mac;
+    free(ifr);
+    return Attacker_mac;
 }
 
 void usage() {
@@ -91,12 +92,12 @@ const u_char* find_Sender_Mac(pcap* handle,  struct pcap_pkthdr* header, ARP *AR
 
          uint8_t OpCode= packet[21];
          uint16_t eth_type=uint16_t((packet[12]<<8)|packet[13]);
-         uint32_t send_ip = uint32_t((packet[28]<<24 )| (packet[29]<<16)| (packet[30] <<8)| packet[31]);
-         uint32_t target_ip = uint32_t((packet[38]<<24 )| (packet[39]<<16)| (packet[40] <<8)| packet[41]);
+         uint32_t sender_ip = uint32_t((packet[28]<<24 )| (packet[29]<<16)| (packet[30] <<8)| packet[31]);
+         uint32_t attacker_ip = uint32_t((packet[38]<<24 )| (packet[39]<<16)| (packet[40] <<8)| packet[41]);
 
-         //compare Captured Packet and condition
+         //compare Captured Packet and condition, Because it is reply. so Send_ip and dest_ip are reversed.
 
-        if((ARP_Number==eth_type)&& (OC_Rep== OpCode)&& (ARP_Pac->ARP_Header.DPT_Adr ==ntohl(send_ip))&& (ARP_Pac->ARP_Header.SPT_Adr==ntohl(target_ip)) )
+        if((ARP_Number==eth_type)&& (OC_Rep== OpCode)&& (ARP_Pac->ARP_Header.DPT_Adr ==ntohl(sender_ip))&& (ARP_Pac->ARP_Header.SPT_Adr==ntohl(attacker_ip)) )
           {
             return packet;
           }

@@ -7,15 +7,15 @@ int main (int argc, const char * argv[])
      return -1;
    }
 
-    struct pcap_pkthdr* header;
-          const u_char* packet;
+    struct pcap_pkthdr* header=nullptr;
+          const u_char* packet=nullptr;
     const char *dev = argv[1];
     uint32_t SenderIP = inet_addr(argv[2]);
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t* handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
     ARP *ARP_Pac = (ARP*)malloc(sizeof(ARP));
 
-   if (handle == NULL) {
+   if (handle == nullptr) {
      fprintf(stderr, "couldn't open device %s: %s\n", dev, errbuf);
      return -1;
    }
