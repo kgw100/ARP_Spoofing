@@ -15,7 +15,6 @@ unsigned char * find_Attacker_Mac(const char *dev)
 
      if (ioctl(s, SIOCGIFHWADDR, ifr) < 0) {
        perror("ioctl");
-
        exit(EXIT_FAILURE);
      }
     unsigned char * Attacker_mac = (unsigned char *)malloc(sizeof(char)*6);
@@ -32,7 +31,7 @@ void usage() {
 
 void ARP_REQ_Set(const char *dev, ARP *ARP_Pac,uint32_t SenderIP)
 {
-      unsigned char * Attacker_mac;// = nullptr;
+      unsigned char * Attacker_mac= nullptr;
 
       // Get_Sender_Mac
         Attacker_mac = find_Attacker_Mac(dev);
@@ -50,8 +49,7 @@ void ARP_REQ_Set(const char *dev, ARP *ARP_Pac,uint32_t SenderIP)
          ARP_Pac->ARP_Header.PAL=0x04;
          ARP_Pac->ARP_Header.Oper_Code =htons(OC_Req);//Operate Code = 1,  ARP Request
          for(int i=0; i<6; i++)ARP_Pac->ARP_Header.SHW_Adr[i] =ARP_Pac->Eth_Header.S_Mac[i];
-           ARP_Pac->ARP_Header.SPT_Adr= 0x00000000; //attacker IP
-          //ARP_Pac->SPT_Adr=ntohl(0XC0A82B9D);  //attacker IP
+           ARP_Pac->ARP_Header.SPT_Adr= 0x00000000; //hide attacker IP
          memset(ARP_Pac->ARP_Header.DHW_Adr,0X00,6);
          ARP_Pac->ARP_Header.DPT_Adr=SenderIP; //Sender IP = 0xC0A82BE1
 }
@@ -93,13 +91,17 @@ const u_char* find_Sender_Mac(pcap* handle,  struct pcap_pkthdr* header, ARP *AR
          uint8_t OpCode= packet[21];
          uint16_t eth_type=uint16_t((packet[12]<<8)|packet[13]);
          uint32_t sender_ip = uint32_t((packet[28]<<24 )| (packet[29]<<16)| (packet[30] <<8)| packet[31]);
-         uint32_t attacker_ip = uint32_t((packet[38]<<24 )| (packet[39]<<16)| (packet[40] <<8)| packet[41]);
+         uint8_t Dst_mac[6];
+         for(int i=0; i<6;i++) Dst_mac[i]=packet[32+i];
 
          //compare Captured Packet and condition, Because it is reply. so Send_ip and dest_ip are reversed.
 
-        if((ARP_Number==eth_type)&& (OC_Rep== OpCode)&& (ARP_Pac->ARP_Header.DPT_Adr ==ntohl(sender_ip))&& (ARP_Pac->ARP_Header.SPT_Adr==ntohl(attacker_ip)) )
+        if((ARP_Number==eth_type)&& (OC_Rep== OpCode)&& (ARP_Pac->ARP_Header.DPT_Adr ==ntohl(sender_ip))&& (strcmp((const char *)Dst_mac,(const char *)ARP_Pac->ARP_Header.SHW_Adr)==0))
           {
             return packet;
           }
-        }
+         else
+            continue;
+    }
+    return nullptr;
 }
