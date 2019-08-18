@@ -15,8 +15,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        func.cpp \
-        main.cpp
+        arp_sender.cpp \
+        arp_target.cpp \
+        find_mac.cpp \
+        main.cpp \
+        relay.cpp \
+        util.cpp
 LIBS += -lpcap
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -24,4 +28,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    send_arp.h
+    send_arp.h \
+    sfdafx.h \
+    util.h
