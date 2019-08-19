@@ -1,26 +1,32 @@
 #include <sfdafx.h>
 #include <send_arp.h>
-#include <utill.h>
+#include <util.h>
 
 
 int main (int argc, const char * argv[])
 {
-   if (argc != 4) {
-     usage();
-     return -1;
+    if ((argc % 2 == 1 )&& (argc != 0)) {
+        usage();
+        return -1;
 
-   }
-    const u_char* sender_packet=nullptr;
-    const u_char* target_packet=nullptr;
-    struct pcap_pkthdr* header;
+        }
     const char *dev = argv[1];
-    uint32_t SenderIP = inet_addr(argv[2]);
-    uint32_t TargetIP = inet_addr(argv[3]);
-    char errbuf[PCAP_ERRBUF_SIZE];
-    pcap_t* handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
-    ARP *Sen_ARP_Pac = (ARP*)malloc(sizeof(ARP));
-    ARP * Tar_ARP_Pac = (ARP*)malloc(sizeof(ARP));
-    //IP *IP_Pac;
+    int session = (argc -2) /2;
+
+    while(true){
+        int i=0;
+        char key;
+        while(i<session){
+
+            const u_char* sender_packet=nullptr;
+            const u_char* target_packet=nullptr;
+            struct pcap_pkthdr* header;
+            uint32_t SenderIP = inet_addr(argv[i+2]);
+            uint32_t TargetIP = inet_addr(argv[i+3]);
+            char errbuf[PCAP_ERRBUF_SIZE];
+            pcap_t* handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
+            ARP *Sen_ARP_Pac = (ARP*)malloc(sizeof(ARP));
+            ARP * Tar_ARP_Pac = (ARP*)malloc(sizeof(ARP));
 
 
    if (handle == nullptr) {
@@ -46,15 +52,13 @@ int main (int argc, const char * argv[])
 
 //    //Send ARP to Sender & Target
 
-//    //IP_REL_Set(handle,IP_Pac,target_packet,dev,argv);
-     printf("target_mac1 : ");
-     for(int i=0; i<6; i++) printf("%02x",target_packet[i+6]);
-             puts("\n");
     Send_IP_REL(handle,header,Tar_ARP_Pac,Sen_ARP_Pac, target_packet,dev, argv);
 
-
+    i++;
     free(Sen_ARP_Pac);
-    //free(IP_Pac);
+        }
 
+    cmpkey(key);
     return 0;
+    }
 }

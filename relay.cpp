@@ -1,6 +1,6 @@
 #include <sfdafx.h>
 #include <send_arp.h>
-#include <utill.h>
+#include <util.h>
 
 
 void Send_IP_REL(pcap_t* handle,pcap_pkthdr*header,ARP *Tar_ARP_Pac, ARP *Sen_ARP_Pac,
@@ -32,9 +32,10 @@ void Send_IP_REL(pcap_t* handle,pcap_pkthdr*header,ARP *Tar_ARP_Pac, ARP *Sen_AR
                Send_ARP_ToSender(handle,Sen_ARP_Pac,sizeof(ARP));
                Send_ARP_ToTarget(handle,Tar_ARP_Pac,sizeof(ARP));
                printf("Success 3!(Press q to exit)\n");
+
                 sleep(1);
-           if(IP_Number== Eth_type&& ntohl(SIP)==inet_addr(argv[2]) && ntohl(DIP) == inet_addr(argv[3])
-                   && strcmp((const char *)Dst_mac,(const char *)Attacker_mac)==0 )
+           if(IP_Number== Eth_type&& ntohl(SIP)==inet_addr(argv[2]) && ntohl(DIP) == inet_addr(argv[3]))
+                  // && strcmp((const char *)Dst_mac,(const char *)Attacker_mac)==0 )
                 {
                     printf("Success 4!\n");
                     //printf("Tar3_mac:");
@@ -46,24 +47,10 @@ void Send_IP_REL(pcap_t* handle,pcap_pkthdr*header,ARP *Tar_ARP_Pac, ARP *Sen_AR
                     printf("cap-len:%d",header->caplen);
                     pcap_sendpacket(handle,(unsigned char *)copy_packet, sizeof(u_char) *header->caplen);
 
-                    printf("Packet Relay1!(Press q to exit)\n\n");
-                    key = getKey();
-                    if(key == 'q')
-                    {
-                    printf("pressed Your key : %c! Success quit \n\n",key);
                     free(target_copy);
                     free(copy_packet);
-                    break;
-                    }
-                    else if (key!='q' && key != '\0') {
-                        fflush(stdin);
-                        printf("Pressed incorrect key= %c! Try again\n",key);
-;                    }
-                    else
-                    {
-                    fflush(stdin);
-                    continue;
-                    }
+                    printf("Packet Relay1!(Press q to exit)\n\n");
+                   //get key section
                 }
            else if(IP_Number== Eth_type &&  ntohl(SIP)==inet_addr(argv[3]) && ntohl(DIP) == inet_addr(argv[2]))
                    //&& strcmp((const char *)Dst_mac,(const char *)Attacker_mac)==0)
@@ -73,46 +60,17 @@ void Send_IP_REL(pcap_t* handle,pcap_pkthdr*header,ARP *Tar_ARP_Pac, ARP *Sen_AR
                for(int i=0; i<6; i++)copy_packet[i] =target_copy[i];
                //printf("copy_packet:");
                for(int i=0; i<6; i++) copy_packet[i+6]= Attacker_mac[i];
+        \
                printf("cap-len2:%d",header->caplen);
                pcap_sendpacket(handle,(unsigned char *)copy_packet, sizeof(u_char) *header->caplen);
                printf("Packet Relay2!(Press q to exit)\n\n");
-               key = getKey();
-               if(key == 'q')
-               {
-               printf("pressed Your key : %c! Success quit \n\n",key);
+
                free(target_copy);
                free(copy_packet);
-               break;
-               }
-               else if (key!='q' && key != '\0') {
-                   fflush(stdin);
-                   printf("Pressed incorrect key= %c! Try again\n",key);
-;                    }
-               else
-               {
-               fflush(stdin);
-               continue;
-               }
+               //get key section
            }
            else {
-               key = getKey();
-               if(key == 'q')
-               {
-               printf("pressed Your key : %c! Success quit \n\n",key);
-               free(target_copy);
-               free(copy_packet);
-               break;
-               }
-               else if (key!='q' && key != '\0') {
-                   fflush(stdin);
-                   printf("Pressed incorrect key= %c! Try again\n\n",key);
-;                    }
-               else
-               {
-               fflush(stdin);
                continue;
-               }
-                  }
-
+           }
        }
 }

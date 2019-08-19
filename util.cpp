@@ -49,10 +49,23 @@ char linux_getch()
 }
 
 void usage() {
-  printf("syntax: send_arp <interface> <Sender1> <Target1> <Sender2> <Target2>\n");
-  printf("sample: send_arp wlan0 192.168.10.223 192.168.10.1 192.168.10.1 192.168.10.X\n");
+  printf("syntax: send_arp <interface> <Sender1> <Target1> <Sender2> <Target2>...\n");
+  printf("sample: send_arp wlan0 192.168.10.223 192.168.10.1 192.168.10.1 192.168.10.X...\n");
 }
-void cmp_key(char key)
+int cmpkey(char key)
 {
-
+    key = getKey();
+    if(key == 'q')
+    {
+    printf("pressed Your key : %c! Success quit \n\n",key);
+    return 0;
+    }
+    else if (key!='q' && key != '\0') {
+        fflush(stdin);
+        printf("Pressed incorrect key= %c! Try again\n",key);
+;                    }
+    else
+    {
+    fflush(stdin);
+    }
 }

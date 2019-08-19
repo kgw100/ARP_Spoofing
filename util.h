@@ -7,3 +7,4 @@ int linux_kbhit();
 char linux_getch();
 char getKey();
 void usage();
+int cmpkey(char key);

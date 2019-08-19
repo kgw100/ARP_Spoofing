@@ -21,7 +21,7 @@ void ARP_REQ_ToSender_Set(const char *dev, ARP *Sen_ARP_Pac,uint32_t SenderIP)
          Sen_ARP_Pac->ARP_Header.PAL=0x04;
          Sen_ARP_Pac->ARP_Header.Oper_Code =htons(OC_Req);//Operate Code = 1,  ARP Request
          for(int i=0; i<6; i++)Sen_ARP_Pac->ARP_Header.SHW_Adr[i] =Sen_ARP_Pac->Eth_Header.S_Mac[i];
-         Sen_ARP_Pac->ARP_Header.SPT_Adr= 0x00000000; //hide attacker IP
+         Sen_ARP_Pac->ARP_Header.SPT_Adr= htonl(0XC0A82B88); //0x00000000; //hide attacker IP
          memset(Sen_ARP_Pac->ARP_Header.DHW_Adr,0X00,6);
          Sen_ARP_Pac->ARP_Header.DPT_Adr=SenderIP; //Sender IP = 0xC0A82BE1
 }
